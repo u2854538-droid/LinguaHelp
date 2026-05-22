@@ -20,7 +20,7 @@ from kivymd.toast import toast
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.progressbar import MDProgressBar
 
-# ============ НАЧАЛЬНЫЕ СЛОВА ДЛЯ БАЗЫ ДАННЫХ (встроенные) ============
+
 INITIAL_WORDS = [
     ("apple", "яблоко", "I eat an apple every day", "en", "easy"),
     ("car", "машина", "My car is red", "en", "easy"),
@@ -41,7 +41,6 @@ INITIAL_WORDS = [
     ("schön", "красивый", "Das Wetter ist schön", "de", "hard"),
 ]
 
-# ============ ЦВЕТА ============
 SKY_MID = [0.70, 0.82, 0.96, 1]
 CORNFLOWER = [0.55, 0.65, 0.90, 1]
 CORNFLOWER_DARK = [0.45, 0.55, 0.82, 1]
@@ -53,7 +52,6 @@ TEXT_LIGHT = [0.45, 0.50, 0.65, 1]
 SKY_LIGHT = [0.92, 0.96, 0.99, 1]
 
 
-# ============ БАЗА ДАННЫХ ============
 class Database:
     def __init__(self, db_name='linguahelp.db'):
         self.conn = sqlite3.connect(db_name)
@@ -192,7 +190,6 @@ class Database:
         self.conn.close()
 
 
-# ============ SRS ENGINE ============
 class SRSEngine:
     @staticmethod
     def calculate_next_interval(ease_factor, rating, interval, repetitions):
@@ -209,7 +206,6 @@ class SRSEngine:
         return interval, max(1.3, new_ease), new_reps
 
 
-# ============ КАРТОЧКА ДЛЯ ОБУЧЕНИЯ ============
 class LearningCard(MDCard):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -223,7 +219,6 @@ class LearningCard(MDCard):
         self.orientation = "vertical"
         self.spacing = dp(12)
 
-        # Слово
         self.word_label = MDLabel(
             font_style="H4",
             halign="center",
@@ -233,7 +228,6 @@ class LearningCard(MDCard):
             theme_text_color="Primary"
         )
 
-        # Перевод
         self.trans_label = MDLabel(
             font_style="H5",
             halign="center",
@@ -242,14 +236,12 @@ class LearningCard(MDCard):
             height=dp(50),
         )
 
-        # Разделитель
         self.sep = Widget(size_hint=(1, None), height=dp(1))
         with self.sep.canvas:
             Color(*CORNFLOWER_LIGHT)
             self.sep_rect = Rectangle(pos=self.sep.pos, size=self.sep.size)
         self.sep.bind(pos=self.update_sep, size=self.update_sep)
 
-        # Пример — важно: text_size задаём через bind на size карточки
         self.example_label = MDLabel(
             font_style="Body1",
             italic=True,
@@ -259,10 +251,8 @@ class LearningCard(MDCard):
             size_hint=(1, None),
             height=dp(70),
         )
-        # text_size будет обновляться при смене размера карточки
         self.bind(size=self._update_example_text_size)
 
-        # Кнопки
         self.btn_layout = BoxLayout(
             spacing=dp(12),
             size_hint=(1, None),
@@ -292,7 +282,7 @@ class LearningCard(MDCard):
         self.add_widget(self.trans_label)
         self.add_widget(self.sep)
         self.add_widget(self.example_label)
-        self.add_widget(Widget(size_hint_y=1))  # распорка
+        self.add_widget(Widget(size_hint_y=1)) 
         self.add_widget(self.btn_layout)
 
         self.current_trans = ""
@@ -319,7 +309,6 @@ class LearningCard(MDCard):
         app.on_answer(rating)
 
 
-# ============ ЭКРАН ЗАСТАВКИ ============
 class SplashScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -423,7 +412,6 @@ class SplashScreen(Screen):
         Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'main'), 0.5)
 
 
-# ============ ЭКРАН ОБУЧЕНИЯ ============
 class LearningScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -474,7 +462,6 @@ class LearningScreen(Screen):
         self.restart_btn.disabled = not show
 
 
-# ============ ЭКРАН СТАТИСТИКИ ============
 class StatsScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -486,7 +473,6 @@ class StatsScreen(Screen):
             self.rect = Rectangle(pos=self.pos, size=self.size)
         self.bind(pos=self.update_rect, size=self.update_rect)
 
-        # Корень — BoxLayout, занимает весь экран
         root = BoxLayout(
             orientation='vertical',
             padding=[dp(16), dp(16), dp(16), dp(16)],
@@ -503,7 +489,6 @@ class StatsScreen(Screen):
         )
         root.add_widget(title)
 
-        # Карточка — серия
         streak_card = self._make_stat_card("Серия дней")
         self.streak_lbl = MDLabel(
             text="0", font_style="H3", halign="center",
@@ -512,7 +497,6 @@ class StatsScreen(Screen):
         streak_card.add_widget(self.streak_lbl)
         root.add_widget(streak_card)
 
-        # Карточка — пройдено
         reviewed_card = self._make_stat_card("Пройдено всего")
         self.reviewed_lbl = MDLabel(
             text="0", font_style="H3", halign="center",
@@ -521,7 +505,6 @@ class StatsScreen(Screen):
         reviewed_card.add_widget(self.reviewed_lbl)
         root.add_widget(reviewed_card)
 
-        # Карточка — точность
         acc_card = self._make_stat_card("Точность ответов")
         self.acc_bar = MDProgressBar(
             value=0, size_hint=(1, None), height=dp(12), color=CORNFLOWER
@@ -534,7 +517,6 @@ class StatsScreen(Screen):
         acc_card.add_widget(self.acc_lbl)
         root.add_widget(acc_card)
 
-        # Распорка внизу чтобы карточки не растягивались
         root.add_widget(Widget())
 
         self.add_widget(root)
@@ -565,7 +547,6 @@ class StatsScreen(Screen):
         self.rect.size = instance.size
 
 
-# ============ ЭКРАН СЛОВАРЯ ============
 class DictionaryScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -578,10 +559,8 @@ class DictionaryScreen(Screen):
             self.rect = Rectangle(pos=self.pos, size=self.size)
         self.bind(pos=self.update_rect, size=self.update_rect)
 
-        # Корень — BoxLayout на весь экран
         root = BoxLayout(orientation='vertical')
 
-        # Верхняя часть (фиксированная): заголовок + форма + фильтр
         top = BoxLayout(
             orientation='vertical',
             size_hint=(1, None),
@@ -599,7 +578,6 @@ class DictionaryScreen(Screen):
         )
         top.add_widget(title)
 
-        # Форма добавления — без фиксированной высоты карточки, внутренний BoxLayout сам считает
         add_card = MDCard(
             size_hint=(1, None),
             radius=[dp(18)],
@@ -659,7 +637,7 @@ class DictionaryScreen(Screen):
         add_card.add_widget(add_inner)
         top.add_widget(add_card)
 
-        # Строка фильтра
+
         filter_layout = BoxLayout(size_hint=(1, None), height=dp(46), spacing=dp(10))
         filter_layout.add_widget(MDLabel(
             text="Показать:",
@@ -680,8 +658,6 @@ class DictionaryScreen(Screen):
         top.add_widget(filter_layout)
 
         root.add_widget(top)
-
-        # Нижняя часть — прокручиваемый список слов
         self.words_list = ScrollView(size_hint=(1, 1))
         self.words_container = BoxLayout(
             orientation='vertical',
@@ -777,7 +753,6 @@ class DictionaryScreen(Screen):
                 font_size=sp(12),
                 valign='middle'
             )
-            # Сохраняем wid в замыкании корректно
             delete_btn = MDIconButton(
                 icon="delete",
                 theme_text_color="Hint",
@@ -832,7 +807,6 @@ class DictionaryScreen(Screen):
         app.update_stats_ui()
 
 
-# ============ ЭКРАН НАСТРОЕК ============
 class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -857,7 +831,6 @@ class SettingsScreen(Screen):
             height=dp(44)
         )
 
-        # Карточка языка
         lang_card = MDCard(
             size_hint=(1, None),
             height=dp(130),
@@ -884,7 +857,6 @@ class SettingsScreen(Screen):
         lang_buttons.add_widget(self.de_btn)
         lang_card.add_widget(lang_buttons)
 
-        # Карточка сложности
         diff_card = MDCard(
             size_hint=(1, None),
             height=dp(130),
@@ -952,8 +924,6 @@ class SettingsScreen(Screen):
         MDApp.get_running_app().reset_progress()
         toast("Прогресс сброшен")
 
-
-# ============ ГЛАВНЫЙ ЭКРАН ============
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -983,7 +953,6 @@ class MainScreen(Screen):
         self.sm.add_widget(self.settings_screen)
         layout.add_widget(self.sm)
 
-        # Нижняя навигация — высота адаптивная через dp
         bottom_nav = BoxLayout(
             orientation='horizontal',
             size_hint=(1, None),
@@ -1062,7 +1031,6 @@ class MainScreen(Screen):
             lbl.color = color
 
 
-# ============ ОСНОВНОЕ ПРИЛОЖЕНИЕ ============
 class LinguaHelpApp(MDApp):
     language = "en"
     difficulty = "easy"
